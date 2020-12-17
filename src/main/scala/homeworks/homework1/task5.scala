@@ -6,7 +6,15 @@ object task5 extends App {
    * Если оба значения определены, возвращается их произведение.
    * Если хотя бы одно значение не определено, возвращается None.
    */
-  def optionProduct(option1: Option[Int], option2: Option[Int]): Option[Int] = ???
+  def optionProduct(option1: Option[Int], option2: Option[Int]): Option[Int] =
+    (option1, option2) match {
+      case (None, option2) =>
+        None
+      case (option1, None) =>
+        None
+      case (Some(item1), Some(item2)) =>
+        Some(item1 * item2)
+    }
 
   println(optionProduct(Some(3), Some(5)))
   // Some(15)

@@ -39,18 +39,42 @@ sealed trait BinaryTree {
    * @param p предикат
    * @return true, если все элементы в дереве удовлетворяют предикату p, иначе false
    */
-  def forall(p: Int => Boolean): Boolean = ???
+  def forall(p: Int => Boolean): Boolean =
+    this match {
+      case Branch(value, left, right) =>
+        if (p(value)) {
+          left.forall(p) && right.forall(p)
+        } else {
+          false
+        }
+
+      case smth => true
+    }
 
   /**
    * @param p предикат
    * @return true, если в дереве существует элемент, удовлетворяющий предикату p, иначе false
    */
-  def exists(p: Int => Boolean): Boolean = ???
+  def exists(p: Int => Boolean): Boolean =
+    this match {
+      case Branch(value, left, right) =>
+        if (p(value)) {
+          true
+        } else {
+          left.exists(p) || right.exists(p)
+        }
+
+      case smth => false
+    }
 
   /**
    * @return число элементов в дереве
    */
-  def size: Int = ???
+  def size: Int =
+    this match {
+      case Branch(value, left, right) => left.size + right.size + 1
+      case Leaf => 0
+    }
 
   /**
    * Возвращает дерево из первых n элементов этого дерева. Если размер дерева меньше n, возвращает this
@@ -58,7 +82,21 @@ sealed trait BinaryTree {
    * @param n число элементов, которые нужно вернуть
    * @return новое дерево из первых n элементов дерева. Желательно, переиспользует структуру существующего дерева
    */
-  def take(n: Int): BinaryTree = ???
+  def take(n: Int): BinaryTree =
+    n match {
+      case size if size >= this.size => this
+      case size => this match {
+        case Branch (value, left, right) =>
+          val leftBatch = left.take(size)
+
+          if (leftBatch.size >= size) {
+            leftBatch
+          } else {
+            val rightBatch = right.take(size - leftBatch.size - 1)
+            Branch(value, leftBatch, rightBatch)
+          }
+      }
+    }
 
   /**
    * Применяет оператор op ко всем элементам дерева по порядку, начиная с z.
@@ -76,7 +114,13 @@ sealed trait BinaryTree {
    * @tparam B тип начального значения и результата
    * @return результат применения оператора ко всем элементам дерева
    */
-  def foldLeft[B](z: B)(op: (B, Int) => B): B = ???
+  def foldLeft[B](z: B)(op: (B, Int) => B): B =
+    this match {
+      case Branch(value, left, right) =>
+        right.foldLeft(op(left.foldLeft(z)(op), value))(op)
+
+      case Leaf => z
+    }
 }
 
 final case class Branch(value: Int, left: BinaryTree, right: BinaryTree) extends BinaryTree

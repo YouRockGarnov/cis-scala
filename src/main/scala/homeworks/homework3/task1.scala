@@ -12,7 +12,10 @@ object task1 extends IOApp {
   // Реализуйте функцию map3, которая комбинирует значения из трех IO в одно с помощью функции f (см. примеры).
   //
   // Продвинутая версия (не обязательно): вычислять IO[A], IO[B], IO[C] одновременно, а не последовательно
-  def map3[A, B, C, D](fa: IO[A], fb: IO[B], fc: IO[C])(f: (A, B, C) => D): IO[D] = ???
+  def map3[A, B, C, D](fa: IO[A], fb: IO[B], fc: IO[C])(f: (A, B, C) => D): IO[D] = {
+    val ab = fa.parProduct(fb)
+    ab.parProduct(fc).map(tpl => f(tpl._1._1, tpl._1._2, tpl._2))
+  }
 
 
   // Служебные функции для примеров
