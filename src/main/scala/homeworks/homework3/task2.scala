@@ -35,13 +35,13 @@ object task2 extends IOApp {
   // Hint: воспользуетесь методом traverse, который доступен благодаря импорту cats.implicits._
   // Примеры - .parTraverse из семинара 8
   def getCities(codes: List[String]): IO[List[City]] = {
-    val lst = List(City("Москва", 10), City("Москва", 10), City("Москва", 10)).sortBy(_.priority)
-    IO(City("Москва", 10))
+//    val lst = List(City("Москва", 10), City("Москва", 10), City("Москва", 10)).sortBy(_.priority)
+//    IO(City("Москва", 10))
     //codes.map(code => getCity(code)).//.sortBy(_.priority).parTraverse(item => item)  //.sortWith((city1, city2) => city1.priority > city2.priority).parTraverse(item => item) //.sortBy(_.priority).parTraverse(item => item)
     //codes.parTraverse()
     //tasks.parTraverse(_.flatMap(deferred.complete).handleErrorWith(error => IO(println(error))).start)
-
-    codes.map(code => getCity(code)).parTraverse(_.flatMap(_.handleErrorWith(error => IO(println(error)))))
+    //codes.map(code => getCity(code)).parTraverse(_.flatMap(_.handleErrorWith(error => IO(println(error)))))
+    codes.parTraverse(getCity).map(_.sortBy(-_.priority))
   }
 
   def run(args: List[String]): IO[ExitCode] =
